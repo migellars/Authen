@@ -31,10 +31,8 @@ namespace GIGLite.Auth.Controllers
 
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        // private readonly IEmailSender _emailSender;
-        //private readonly ISmsSender _smsSender;
+
         private readonly GigLiteDbContext _GigLiteDbContext;
-        private static bool _databaseChecked;
 
         public RoleManager<IdentityRole> _roleManager { get; }
 
@@ -43,10 +41,8 @@ namespace GIGLite.Auth.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            // _roleManager = roleManager;
             _GigLiteDbContext = GigLiteDbContext;
             _scopeManager = scopeManager;
-
         }
         [HttpPost("~/connect/token"), Produces("application/json")]
         public async Task<IActionResult> Exchange(OpenIdConnectRequest request)
@@ -81,15 +77,13 @@ namespace GIGLite.Auth.Controllers
                     OpenIdConnectConstants.Claims.Name,
                     OpenIdConnectConstants.Claims.Role);
 
-                identity.AddClaim(OpenIdConnectConstants.Claims.Subject,user.Id,OpenIdConnectConstants.Destinations.AccessToken);
-                identity.AddClaim(OpenIdConnectConstants.Claims.Name, user.UserName,OpenIdConnectConstants.Destinations.AccessToken);
+                identity.AddClaim(OpenIdConnectConstants.Claims.Subject, user.Id, OpenIdConnectConstants.Destinations.AccessToken);
+                identity.AddClaim(OpenIdConnectConstants.Claims.Name, user.UserName, OpenIdConnectConstants.Destinations.AccessToken);
                 foreach (var userRole in getUserRole)
                 {
-                    identity.AddClaim(OpenIdConnectConstants.Claims.Role, userRole,OpenIdConnectConstants.Destinations.AccessToken);
+                    identity.AddClaim(OpenIdConnectConstants.Claims.Role, userRole, OpenIdConnectConstants.Destinations.AccessToken);
                 }
-                // ... add other claims, if necessary.
                 var principal = new ClaimsPrincipal(identity);
-                // Ask OpenIddict to generate a new token and return an OAuth2 token response.
                 return SignIn(principal, OpenIddictServerDefaults.AuthenticationScheme);
 
                 #endregion
@@ -128,6 +122,50 @@ namespace GIGLite.Auth.Controllers
             return BadRequest("model state is invald");
         }
 
+        [HttpPut]
+        [Route("update/{userId}")]
+        public async Task<IActionResult> Update(string userId, RegisterViewModel registration)
+        {
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+
+            if (user == null)
+            {
+                return BadRequest("User not found");
+
+            }
+
+            if (!string.Equals(user.Email, registration.Email, StringComparison.CurrentCultureIgnoreCase))
+            {
+                var isFound = await _userManager.FindByEmailAsync(registration.Email.ToLower());
+                if (isFound == null)
+                {
+                    return BadRequest("User email not found");
+
+                }
+            }
+            var _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_GigLiteDbContext), null, null, null, null);
+
+            var roleExist = await _roleManager.RoleExistsAsync(registration.Role);
+            if (!roleExist)
+            {
+                return BadRequest("role does not exist");
+            }
+
+            user.Email = registration.FirstName;
+            user.LastName = registration.LastName;
+            user.PhoneNumber = registration.PhoneNumber;
+            //user.UserType = registration.UserType;
+
+            if (!await UpdateUserAsync(user, registration.Role))
+            {
+                return BadRequest("unable to update user information");
+                //throw await _helper.GetExceptionAsync(ErrorConstants.USER_ACCOUNT_REGISTRATION_FAILED);
+            }
+
+            return Ok(user);
+        }
         private async void CreateRoles(GigLiteDbContext context)
         {
             //var context = new GigLiteDbContext();
@@ -148,6 +186,24 @@ namespace GIGLite.Auth.Controllers
             }
         }
 
+        public async Task<bool> UpdateUserAsync(ApplicationUser user, string role)
+        {
+            if (role == null)
+                throw new ArgumentNullException(nameof(role));
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            if (currentRoles.Count > 0)
+            {
+                await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray());
+            }
+
+            await _userManager.AddToRoleAsync(user, role);
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
+        }
 
 
 

@@ -28,5 +28,8 @@ namespace GIGLite.Auth.Models.ViewModels
         //[Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
         public string Role { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
