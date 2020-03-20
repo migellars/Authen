@@ -98,8 +98,7 @@ namespace GIGLite.Auth.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
             CreateRoles(_GigLiteDbContext);
-            //EnsureDatabaseCreated(_GigLiteDbContext);
-            //ViewData["ReturnUrl"] = returnUrl;
+            
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
@@ -119,7 +118,7 @@ namespace GIGLite.Auth.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return BadRequest("model state is invald");
+            return BadRequest("model state is invalid");
         }
 
         [HttpPut]
@@ -161,17 +160,14 @@ namespace GIGLite.Auth.Controllers
             if (!await UpdateUserAsync(user, registration.Role))
             {
                 return BadRequest("unable to update user information");
-                //throw await _helper.GetExceptionAsync(ErrorConstants.USER_ACCOUNT_REGISTRATION_FAILED);
             }
 
             return Ok(user);
         }
         private async void CreateRoles(GigLiteDbContext context)
         {
-            //var context = new GigLiteDbContext();
 
             var _roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context), null, null, null, null);
-            //var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context), null, null, null, null);
 
             var rolesArray = new string[] { "Admin", "Operation", "ICU" };
             foreach (var role in rolesArray)
