@@ -4,14 +4,16 @@ using GIGLite.Auth.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GIGLite.Auth.Migrations
 {
     [DbContext(typeof(GigLiteDbContext))]
-    partial class GigLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200320134932_extend_AppUser_class")]
+    partial class extend_AppUser_class
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

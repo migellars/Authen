@@ -181,7 +181,6 @@ namespace GIGLite.Auth.Controllers
                 }
             }
         }
-
         public async Task<bool> UpdateUserAsync(ApplicationUser user, string role)
         {
             if (role == null)
