@@ -12,6 +12,7 @@ namespace GIGLite.Auth.Models
         public GigLiteDbContext(DbContextOptions<GigLiteDbContext> options)
             : base(options)
         {
+            this.Database.Migrate();
 
         }
 

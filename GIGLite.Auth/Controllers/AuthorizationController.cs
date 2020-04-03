@@ -121,8 +121,8 @@ namespace GIGLite.Auth.Controllers
             return BadRequest("model state is invalid");
         }
 
-        [HttpPut]
-        [Route("update/{userId}")]
+        [HttpPut("~/update/{userId}")]
+        //[Route("update/{userId}")]
         public async Task<IActionResult> Update(string userId, RegisterViewModel registration)
         {
 
@@ -137,7 +137,7 @@ namespace GIGLite.Auth.Controllers
 
             if (!string.Equals(user.Email, registration.Email, StringComparison.CurrentCultureIgnoreCase))
             {
-                var isFound = await _userManager.FindByEmailAsync(registration.Email.ToLower());
+                var isFound = await _userManager.FindByNameAsync(user.UserName.ToLower());
                 if (isFound == null)
                 {
                     return BadRequest("User email not found");
@@ -152,9 +152,12 @@ namespace GIGLite.Auth.Controllers
                 return BadRequest("role does not exist");
             }
 
-            user.Email = registration.FirstName;
+            user.Email = registration.Email;
+            user.FirstName = registration.FirstName;
             user.LastName = registration.LastName;
             user.PhoneNumber = registration.PhoneNumber;
+            user.UserName = registration.Email;
+            
             //user.UserType = registration.UserType;
 
             if (!await UpdateUserAsync(user, registration.Role))
@@ -162,8 +165,9 @@ namespace GIGLite.Auth.Controllers
                 return BadRequest("unable to update user information");
             }
 
-            return Ok(user);
+            return Ok();
         }
+        [NonAction]
         private async void CreateRoles(GigLiteDbContext context)
         {
 
@@ -181,6 +185,7 @@ namespace GIGLite.Auth.Controllers
                 }
             }
         }
+        [NonAction]
         public async Task<bool> UpdateUserAsync(ApplicationUser user, string role)
         {
             if (role == null)

@@ -25,12 +25,15 @@ namespace GIGLite.Auth
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
+            //Database.SetInitializer(new DropCreateDatabaseAlways<BlogContext>());
         }
 
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+           
             services.AddControllers();
             services.AddEntityFrameworkSqlServer().AddDbContext<GigLiteDbContext>(options =>
             {

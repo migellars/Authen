@@ -10,6 +10,10 @@ namespace GIGLite.Auth.Models.ViewModels
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Department { get; set; }
+        public string Terminal { get; set; }
+        public string DateJoined { get; set; }
+        public string Position { get; set; }
 
     }
 }
