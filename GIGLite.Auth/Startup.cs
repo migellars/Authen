@@ -38,7 +38,8 @@ namespace GIGLite.Auth
             services.AddEntityFrameworkSqlServer().AddDbContext<GigLiteDbContext>(options =>
             {
                 options.UseOpenIddict();
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),sqlServerOptionsAction: sqlOptions => { sqlOptions.EnableRetryOnFailure(); });
+                
            
             });
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -66,7 +67,7 @@ namespace GIGLite.Auth
                     options.AllowPasswordFlow();
                     options.AcceptAnonymousClients();
                     options.DisableHttpsRequirement();
-                    options.SetAccessTokenLifetime(new TimeSpan(0, 1, 45));
+                    options.SetAccessTokenLifetime(new TimeSpan(0, 15, 0));
                     
                 })
                 .AddValidation();
@@ -86,6 +87,7 @@ namespace GIGLite.Auth
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDeveloperExceptionPage();
 
             app.UseHttpsRedirection();
 

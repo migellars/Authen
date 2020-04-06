@@ -92,6 +92,25 @@ namespace GIGLite.Auth.Controllers
             throw new InvalidOperationException("The specified grant type is not supported.");
         }
 
+        [HttpPost("~/logout"), Produces("application/json")]
+        public async Task<IActionResult> LogoutPost()
+        {
+            // Ask ASP.NET Core Identity to delete the local and external cookies created
+            // when the user agent is redirected from the external identity provider
+            // after a successful authentication flow (e.g Google or Facebook).
+            await _signInManager.SignOutAsync();
+
+            // Returning a SignOutResult will ask OpenIddict to redirect the user agent
+            // to the post_logout_redirect_uri specified by the client application or to
+            // the RedirectUri specified in the authentication properties if none was set.
+            return SignOut(
+                authenticationSchemes: OpenIddictServerDefaults.AuthenticationScheme,
+                properties: new AuthenticationProperties
+                {
+                    RedirectUri = "/"
+                });
+        }
+
         // [HttpPost]
         [AllowAnonymous]
         [HttpPost("~/register"), Produces("application/json")]
