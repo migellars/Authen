@@ -4,14 +4,16 @@ using GIGLite.Auth.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GIGLite.Auth.Migrations
 {
     [DbContext(typeof(GigLiteDbContext))]
-    partial class GigLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200420151532_NewEdit")]
+    partial class NewEdit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,17 +174,17 @@ namespace GIGLite.Auth.Migrations
                     b.Property<bool>("TicketRemovalOtpIsUsed")
                         .HasColumnType("bit");
 
-                    b.Property<double>("TotalCashRemittance")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalCashRemittance")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalCashSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalCashSales")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalExpenseSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalExpenseSales")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalSales")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("WalletId")
                         .HasColumnType("int");

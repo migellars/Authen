@@ -12,11 +12,13 @@ namespace GIGLite.Auth.Models
         public GigLiteDbContext(DbContextOptions<GigLiteDbContext> options)
             : base(options)
         {
-            //this.Database.Migrate();
+            //Database.SetInitializer<GigLiteDbContext>(new CreateDatabaseIfNotExists<GigLiteDbContext>());
+
+            this.Database.Migrate();
 
         }
+        public DbSet<Employee> Employees { get; set; }
 
-       
 
     }
 }

@@ -4,14 +4,16 @@ using GIGLite.Auth.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GIGLite.Auth.Migrations
 {
     [DbContext(typeof(GigLiteDbContext))]
-    partial class GigLiteDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200420144202_addEmployeeTable")]
+    partial class addEmployeeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,6 +111,9 @@ namespace GIGLite.Auth.Migrations
                     b.Property<DateTime>("DateJoined")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DepartmentName")
                         .HasColumnType("nvarchar(max)");
 
@@ -151,17 +156,26 @@ namespace GIGLite.Auth.Migrations
                     b.Property<int?>("OtpNoOfTimeUsed")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PartnerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PartnerName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PositionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("PositionName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReferralCode")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TerminalId")
+                        .HasColumnType("int");
 
                     b.Property<string>("TerminalName")
                         .HasColumnType("nvarchar(max)");
@@ -172,17 +186,17 @@ namespace GIGLite.Auth.Migrations
                     b.Property<bool>("TicketRemovalOtpIsUsed")
                         .HasColumnType("bit");
 
-                    b.Property<double>("TotalCashRemittance")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalCashRemittance")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalCashSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalCashSales")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalExpenseSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalExpenseSales")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<double>("TotalSales")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalSales")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("WalletId")
                         .HasColumnType("int");
