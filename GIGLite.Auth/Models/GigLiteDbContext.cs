@@ -14,11 +14,11 @@ namespace GIGLite.Auth.Models
         {
             //Database.SetInitializer<GigLiteDbContext>(new CreateDatabaseIfNotExists<GigLiteDbContext>());
 
-            this.Database.Migrate();
+            //this.Database.Migrate();
 
         }
         public DbSet<Employee> Employees { get; set; }
-
+        public DbSet<ApplicationUser> AspnetUsers { get; set; }
 
     }
 }

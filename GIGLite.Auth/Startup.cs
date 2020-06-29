@@ -92,25 +92,26 @@ namespace GIGLite.Auth
                     //options.AllowRefreshTokenFlow();
 
                     //options.UseReferenceTokens();
-                    
+
 
 
                 });
                 //.AddValidation(options =>
                 //{
-                //    options.UseReferenceTokens();
-                //    // options.AddAudiences("x-aud");
+                //    //options.UseReferenceTokens();
+                //     options.AddAudiences("gigliteMain");
                 //});
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
             {
                 //Authority must be a url. It does not have a default value.
                 options.Authority = "http://104.238.100.236:236"; //"this server's url, e.g. http://localhost:5051/ or https://auth.example.com/";
                 //options.Authority = "https://localhost:44315"; //"this server's url, e.g. http://localhost:5051/ or https://auth.example.com/";
                 //options.Authority = "http://localhost:82"; //"this server's url, e.g. http://localhost:5051/ or https://auth.example.com/";
-                //options.Audience = "https://localhost:44315"; //This must be included in ticket creation
+                options.Audience = "gigliteMain"; //This must be included in ticket creation
                 options.RequireHttpsMetadata = false;
                 options.IncludeErrorDetails = true; //
                 //options.JwtBackChannelHandler = GetHandler();
@@ -118,9 +119,9 @@ namespace GIGLite.Auth
                 {
                     NameClaimType = Claims.Subject,
                     RoleClaimType = Claims.Role,
-                    //ValidAudience = "https://localhost:44315",
-                    ValidateAudience = false,
-                  
+                    ValidateAudience = true,
+                    ValidAudience = "gigliteMain",
+                    ValidateIssuer = true
                 };
             });
             

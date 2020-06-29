@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore.Models;
@@ -43,13 +44,14 @@ namespace GIGLite.Auth.Controllers
         public IOptions<DefaultAdmin> _defaultAdmin { get; }
 
         public AuthorizationController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, OpenIddictScopeManager<OpenIddictScope> scopeManager, GigLiteDbContext GigLiteDbContext, OpenIddictTokenManager<OpenIddictToken> tokenManager, IOptions<DefaultAdmin> defaultAdmin)
+            SignInManager<ApplicationUser> signInManager, OpenIddictScopeManager<OpenIddictScope> scopeManager, GigLiteDbContext GigLiteDbContext, OpenIddictTokenManager<OpenIddictToken> tokenManager, IOptions<DefaultAdmin> defaultAdmin, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _GigLiteDbContext = GigLiteDbContext;
             this.tokenManager = tokenManager;
             _defaultAdmin = defaultAdmin;
+            _roleManager = roleManager;
             _scopeManager = scopeManager;
         }
         //[Route("/connect/token")]
@@ -101,6 +103,9 @@ namespace GIGLite.Auth.Controllers
                     identity.AddClaim(OpenIdConnectConstants.Claims.Subject, user.Id, OpenIdConnectConstants.Destinations.AccessToken);
                     identity.AddClaim(OpenIdConnectConstants.Claims.Username, user.UserName, OpenIdConnectConstants.Destinations.AccessToken);
                     identity.AddClaim(OpenIdConnectConstants.Claims.Email, user.Email, OpenIdConnectConstants.Destinations.AccessToken);
+                    identity.AddClaim(OpenIdConnectConstants.Claims.Audience, "gigliteMain", OpenIdConnectConstants.Destinations.AccessToken);
+                    identity.AddClaims(getUserRole.Select(role => new Claim(ClaimTypes.Role, role)));
+                    //identity.AddClaim(OpenIdConnectConstants.Claims.Role,, OpenIdConnectConstants.Destinations.AccessToken);
                     if (!isDefaultAdmin)
                     {
                         identity.AddClaim(OpenIdConnectConstants.Claims.PhoneNumber, user.PhoneNumber, OpenIdConnectConstants.Destinations.AccessToken);
@@ -127,7 +132,7 @@ namespace GIGLite.Auth.Controllers
                 }
 
                 var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, OpenIdConnectServerDefaults.AuthenticationScheme);
+                var ticket = new AuthenticationTicket(principal, OpenIdConnectServerDefaults.AuthenticationScheme).SetAudiences("gigliteMain").SetScopes("gigliteMain");
                 //ticket.SetScopes(OpenIdConnectConstants.Scopes.OfflineAccess);
 
                 //return SignIn(ticket.Principal,ticket.Properties, OpenIddictServerDefaults.AuthenticationScheme);
@@ -321,6 +326,45 @@ namespace GIGLite.Auth.Controllers
 
             return Ok();
         }
+
+        [HttpGet("~/allusers")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
+        public IActionResult GetAllUsers()
+        {
+            var allUsers = _GigLiteDbContext.Employees.ToList();
+            if (allUsers != null)
+            {
+                return Ok(allUsers);
+
+            }
+            return NotFound();
+        }
+        
+        [HttpGet("~/user/{userId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
+        public IActionResult GetUser(string userId)
+        {
+            var user = _GigLiteDbContext.Employees.FirstOrDefault(a => a.ApplicationUserId == userId);
+            if (user != null)
+            {
+                return Ok(user);
+            }
+            return NotFound();
+        }
+
+        [HttpGet("~/allroles")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrator")]
+        public IActionResult GetAllRoles()
+        {
+            var roles = _roleManager.Roles.ToList();
+            if (roles != null)
+            {
+                return Ok(roles);
+            }
+            return NotFound();
+        }
+
+
         [NonAction]
         private void CreateRoles(GigLiteDbContext context)
         {
